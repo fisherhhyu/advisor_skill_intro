@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>腾讯云智能顾问 Skill Set — Agentic 风险治理技能集</title>
+
+    <!-- Fonts: Clash Display + Satoshi from Fontshare -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&f[]=satoshi@400;500;700&display=swap">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (NEON CYBER THEME)
+           =========================================== */
+        :root {
+            --bg-primary: #0a0f1c;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.6);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #00ffcc;
+            --accent-magenta: #ff00aa;
+            --accent-blue: #3b82f6;
+            --accent-orange: #ff7b00;
+            --accent-cyan-glow: rgba(0, 255, 204, 0.3);
+            --accent-magenta-glow: rgba(255, 0, 170, 0.2);
+
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --subtitle-size: clamp(0.875rem, 2vw, 1.25rem);
+            --body-size: clamp(0.75rem, 1.4vw, 1.1rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --tag-size: clamp(0.6rem, 0.9vw, 0.8rem);
+
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.6s;
+        }
+
+        /* ===========================================
+           BASE STYLES
+           =========================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            height: 100%;
+        }
+
+        /* ===========================================
+           SLIDE CONTAINER
+           =========================================== */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===========================================
+           GRID BACKGROUND
+           =========================================== */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(0.75rem, 2vw, 2rem);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.4rem, 0.8vh, 0.75rem);
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1.5px solid var(--accent-cyan);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan-glow);
+        }
+
+        .nav-dot:hover {
+            background: rgba(0, 255, 204, 0.5);
+        }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        h1 {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: var(--content-gap);
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        p, li {
+            font-size: var(--body-size);
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .accent { color: var(--accent-cyan); }
+        .accent-magenta { color: var(--accent-magenta); }
+        .accent-orange { color: var(--accent-orange); }
+
+        .glow-text {
+            text-shadow: 0 0 20px var(--accent-cyan-glow), 0 0 40px rgba(0, 255, 204, 0.1);
+        }
+
+        /* ===========================================
+           TAGS / BADGES
+           =========================================== */
+        .tag {
+            display: inline-block;
+            padding: clamp(0.2rem, 0.4vw, 0.35rem) clamp(0.5rem, 1vw, 0.85rem);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 100px;
+            font-size: var(--tag-size);
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+
+        .tag-orange {
+            border-color: rgba(255, 123, 0, 0.4);
+            color: var(--accent-orange);
+        }
+
+        .tag-magenta {
+            border-color: rgba(255, 0, 170, 0.4);
+            color: var(--accent-magenta);
+        }
+
+        /* ===========================================
+           CARDS
+           =========================================== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: clamp(1rem, 2vw, 1.75rem);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 255, 204, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.05);
+        }
+
+        .card h3 { margin-bottom: clamp(0.3rem, 0.8vw, 0.6rem); }
+        .card p { font-size: var(--small-size); }
+
+        .card-icon {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin-bottom: clamp(0.4rem, 0.8vw, 0.75rem);
+        }
+
+        .card-skill {
+            border-left: 3px solid var(--accent-cyan);
+            position: relative;
+        }
+
+        .card-skill.skill-orange { border-left-color: var(--accent-orange); }
+        .card-skill.skill-magenta { border-left-color: var(--accent-magenta); }
+
+        /* ===========================================
+           GRID LAYOUTS
+           =========================================== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(0.75rem, 1.5vw, 1.25rem);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(0.75rem, 1.5vw, 1.25rem);
+        }
+
+        /* ===========================================
+           NEON LINE / DIVIDER
+           =========================================== */
+        .neon-line {
+            width: clamp(40px, 8vw, 80px);
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), transparent);
+            margin: var(--element-gap) 0;
+            border-radius: 2px;
+        }
+
+        /* ===========================================
+           CODE BLOCK
+           =========================================== */
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 204, 0.15);
+            border-radius: 12px;
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: var(--small-size);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: var(--accent-magenta); }
+        .code-block .string { color: var(--accent-cyan); }
+        .code-block .function { color: #fbbf24; }
+
+        /* ===========================================
+           ARCHITECTURE DIAGRAM
+           =========================================== */
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(0.5rem, 1.5vw, 1.5rem);
+            flex-wrap: wrap;
+        }
+
+        .arch-node {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 12px;
+            padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.5rem);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 500;
+            text-align: center;
+            min-width: clamp(70px, 10vw, 120px);
+        }
+
+        .arch-node.highlight {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .arch-arrow {
+            color: var(--accent-cyan);
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            opacity: 0.6;
+        }
+
+        /* ===========================================
+           STATS ROW
+           =========================================== */
+        .stats-row {
+            display: flex;
+            gap: clamp(1.5rem, 4vw, 4rem);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item { text-align: center; }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1;
+            text-shadow: 0 0 30px var(--accent-cyan-glow);
+        }
+
+        .stat-label {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            margin-top: clamp(0.2rem, 0.5vw, 0.5rem);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* ===========================================
+           FEATURE LIST
+           =========================================== */
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.3rem, 0.6vh, 0.5rem);
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.4rem, 0.8vw, 0.6rem);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+        }
+
+        .feature-list li::before {
+            content: '▸';
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        .feature-list.orange li::before { color: var(--accent-orange); }
+        .feature-list.magenta li::before { color: var(--accent-magenta); }
+
+        /* ===========================================
+           QUOTE
+           =========================================== */
+        .quote {
+            font-family: var(--font-display);
+            font-size: clamp(1.25rem, 3vw, 2.25rem);
+            font-weight: 500;
+            line-height: 1.4;
+            color: var(--text-primary);
+            max-width: min(85vw, 800px);
+            position: relative;
+            padding-left: clamp(1rem, 2vw, 2rem);
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .quote-attribution {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            margin-top: var(--element-gap);
+            padding-left: clamp(1rem, 2vw, 2rem);
+        }
+
+        /* ===========================================
+           SKILL HEADER
+           =========================================== */
+        .skill-header {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.5rem, 1vw, 1rem);
+            margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem);
+        }
+
+        .skill-number {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 700;
+            color: var(--accent-cyan);
+            opacity: 0.3;
+            line-height: 1;
+        }
+
+        /* ===========================================
+           TIMELINE
+           =========================================== */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.6rem, 1.2vh, 1rem);
+            padding-left: clamp(1rem, 2vw, 2rem);
+            border-left: 2px solid rgba(0, 255, 204, 0.2);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: clamp(0.75rem, 1.5vw, 1.5rem);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: calc(-1 * clamp(0.75rem, 1.5vw, 1.5rem) - clamp(0.3rem, 0.5vw, 0.5rem));
+            top: 0.5em;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 8px var(--accent-cyan-glow);
+        }
+
+        .timeline-date {
+            font-size: var(--tag-size);
+            color: var(--accent-cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .timeline-text {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity 0.8s var(--ease-out-expo),
+                        transform 0.8s var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .blob-cyan { background: var(--accent-cyan); }
+        .blob-magenta { background: var(--accent-magenta); }
+        .blob-orange { background: var(--accent-orange); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .pulse { animation: pulse 2s ease-in-out infinite; }
+
+        @keyframes glowBorder {
+            0%, 100% { border-color: rgba(0, 255, 204, 0.2); }
+            50% { border-color: rgba(0, 255, 204, 0.5); }
+        }
+
+        /* ===========================================
+           KEYBOARD HINT
+           =========================================== */
+        .keyboard-hint {
+            position: fixed;
+            bottom: clamp(1rem, 2vh, 2rem);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--small-size);
+            color: rgba(255, 255, 255, 0.25);
+            z-index: 100;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .keyboard-hint span {
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            padding: 2px 8px;
+            margin: 0 2px;
+            font-family: var(--font-body);
+        }
+
+        /* ===========================================
+           SLIDE-SPECIFIC: Title Slide
+           =========================================== */
+        .title-slide .slide-content {
+            align-items: center;
+            text-align: center;
+            gap: var(--content-gap);
+        }
+
+        .title-slide h1 { max-width: min(90vw, 900px); }
+
+        .title-slide .subtitle {
+            font-size: var(--subtitle-size);
+            color: var(--text-secondary);
+            max-width: min(80vw, 600px);
+        }
+
+        /* ===========================================
+           RESPONSIVE
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(1rem, 3vw, 2.5rem);
+                --content-gap: clamp(0.5rem, 1.5vw, 1.25rem);
+                --title-size: clamp(1.5rem, 5vw, 3.5rem);
+                --h2-size: clamp(1.25rem, 3.5vw, 2.25rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+            }
+            .nav-dots, .keyboard-hint, .blob { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 4vw, 1.75rem);
+                --h2-size: clamp(0.9rem, 3vw, 1.5rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root { --title-size: clamp(1.75rem, 8vw, 3.5rem); }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .arch-flow { flex-direction: column; }
+            .arch-arrow { transform: rotate(90deg); }
+        }
+
+        @media (max-width: 600px) {
+            .stats-row { gap: clamp(1rem, 3vw, 2rem); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Grid background -->
+    <div class="grid-bg"></div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+
+    <!-- Keyboard hint -->
+    <div class="keyboard-hint" id="keyboardHint">
+        按 <span>←</span> <span>→</span> 或 <span>Space</span> 导航
+    </div>
+
+    <!-- ==========================================
+         SLIDE 1: Title
+         ========================================== -->
+    <section class="slide title-slide" id="slide-0">
+        <div class="blob blob-cyan" style="width:400px;height:400px;top:-100px;right:-100px;"></div>
+        <div class="blob blob-magenta" style="width:300px;height:300px;bottom:-80px;left:-80px;"></div>
+        <div class="slide-content">
+            <div class="reveal">
+                <span class="tag">Agentic AI · 云上风险治理</span>
+            </div>
+            <h1 class="reveal glow-text" style="transition-delay:0.15s;">
+                智能顾问 <span class="accent">Skill Set</span>
+            </h1>
+            <p class="subtitle reveal" style="transition-delay:0.3s;">
+                基于 OpenClaw 的云上卓越架构风险治理 Agentic 智能体技能集合
+            </p>
+            <div class="neon-line reveal" style="transition-delay:0.4s;margin:0 auto;"></div>
+            <p class="reveal" style="transition-delay:0.5s;font-size:var(--small-size);color:var(--text-secondary);">
+                腾讯云智能顾问 · 全球首款可视化卓越架构 AI 治理平台 · 23000+ 服务客户
+            </p>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 2: 智能顾问是什么
+         ========================================== -->
+    <section class="slide" id="slide-1">
+        <div class="blob blob-cyan" style="width:250px;height:250px;top:10%;left:-60px;"></div>
+        <div class="slide-content">
+            <h2 class="reveal">什么是<span class="accent">智能顾问</span>？</h2>
+            <div class="neon-line reveal"></div>
+            <div class="reveal-scale" style="transition-delay:0.2s;">
+                <div class="quote">
+                    全球首款可视化卓越架构 AI 治理平台，基于<span class="accent">「三层模型、六大支柱」</span>为云上架构保驾护航
+                </div>
+                <p class="quote-attribution">— 凝聚腾讯云海量开发运维专家经验与最佳实践</p>
+            </div>
+            <div class="grid-3 reveal" style="transition-delay:0.4s;margin-top:var(--content-gap);">
+                <div class="card">
+                    <div class="card-icon">🔍</div>
+                    <h3>云巡检</h3>
+                    <p>410+ 风险策略，从安全、可靠、性能、成本、服务限制五大维度自动扫描</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📐</div>
+                    <h3>可视化架构</h3>
+                    <p>拖拉拽创建架构图，所见即所得的云资源管理体验</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>混沌演练</h3>
+                    <p>一键生成演练方案，可视化故障注入验证高可用预案</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 3: Why Skill Set
+         ========================================== -->
+    <section class="slide" id="slide-2">
+        <div class="blob blob-magenta" style="width:300px;height:300px;bottom:-50px;right:-80px;"></div>
+        <div class="slide-content">
+            <h2 class="reveal">为什么需要 <span class="accent">Skill Set</span>？</h2>
+            <div class="neon-line reveal"></div>
+            <p class="reveal" style="transition-delay:0.15s;margin-bottom:var(--content-gap);">
+                将智能顾问的能力注入 AI Agent，实现<span class="accent">从被动查看到主动治理</span>的范式升级
+            </p>
+            <div class="grid-2 reveal" style="transition-delay:0.3s;">
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <h3>AI Agent 赋能</h3>
+                    <p>通过 OpenClaw Skill 机制，让 AI 智能体直接调用智能顾问 API，实现自然语言驱动的风险巡检与治理</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔄</div>
+                    <h3>风险管理闭环</h3>
+                    <p>从风险发现 → 分析评估 → 报告生成 → 自动修复，构建端到端的 Agentic 风险治理工作流</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>智能化报告</h3>
+                    <p>自动解析巡检数据、生成多维度可视化统计报告，风险态势一目了然</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⏰</div>
+                    <h3>每日自动化</h3>
+                    <p>定时接收巡检邮件、提炼风险摘要、趋势分析，让运维人员快速掌握每日动态</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 4: Skill Set Overview
+         ========================================== -->
+    <section class="slide" id="slide-3">
+        <div class="blob blob-cyan" style="width:200px;height:200px;top:20%;right:5%;"></div>
+        <div class="blob blob-orange" style="width:180px;height:180px;bottom:15%;left:-40px;"></div>
+        <div class="slide-content">
+            <h2 class="reveal">Skill Set <span class="accent">总览</span></h2>
+            <div class="neon-line reveal"></div>
+            <p class="reveal" style="transition-delay:0.15s;margin-bottom:var(--content-gap);">
+                三大 Skill 协同工作，覆盖风险治理全生命周期
+            </p>
+            <div class="grid-3 reveal" style="transition-delay:0.3s;">
+                <div class="card card-skill">
+                    <div class="card-icon">🔧</div>
+                    <h3>智能顾问集成</h3>
+                    <div style="margin:clamp(0.3rem,0.5vw,0.5rem) 0;">
+                        <span class="tag" style="font-size:clamp(0.5rem,0.7vw,0.65rem);">Python / OpenClaw v2.0</span>
+                    </div>
+                    <p>完整的风险管理闭环——从巡检到自动修复</p>
+                    <ul class="feature-list" style="margin-top:clamp(0.3rem,0.6vw,0.5rem);">
+                        <li>风险列表获取</li>
+                        <li>巡检规则查询</li>
+                        <li>风险深入分析</li>
+                        <li>健康状态检测</li>
+                        <li>自动修复执行</li>
+                    </ul>
+                </div>
+                <div class="card card-skill skill-orange">
+                    <div class="card-icon">📊</div>
+                    <h3>巡检报告解析</h3>
+                    <div style="margin:clamp(0.3rem,0.5vw,0.5rem) 0;">
+                        <span class="tag tag-orange" style="font-size:clamp(0.5rem,0.7vw,0.65rem);">Python / MIT</span>
+                    </div>
+                    <p>自动提取风险数据，生成可视化统计报告</p>
+                    <ul class="feature-list orange" style="margin-top:clamp(0.3rem,0.6vw,0.5rem);">
+                        <li>邮件自动接收</li>
+                        <li>Excel 附件解析</li>
+                        <li>多维度风险统计</li>
+                        <li>网页报告生成</li>
+                        <li>截图反馈输出</li>
+                    </ul>
+                </div>
+                <div class="card card-skill skill-magenta">
+                    <div class="card-icon">📧</div>
+                    <h3>每日邮件报告</h3>
+                    <div style="margin:clamp(0.3rem,0.5vw,0.5rem) 0;">
+                        <span class="tag tag-magenta" style="font-size:clamp(0.5rem,0.7vw,0.65rem);">Shell / OpenClaw</span>
+                    </div>
+                    <p>日常运维自动化，快速掌握每日风险动态</p>
+                    <ul class="feature-list magenta" style="margin-top:clamp(0.3rem,0.6vw,0.5rem);">
+                        <li>多账号分组管理</li>
+                        <li>本地缓存去重</li>
+                        <li>环比对比分析</li>
+                        <li>账号名称映射</li>
+                        <li>定时任务执行</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 5: Skill 1 — 智能顾问集成
+         ========================================== -->
+    <section class="slide" id="slide-4">
+        <div class="blob blob-cyan" style="width:280px;height:280px;top:-40px;left:10%;"></div>
+        <div class="slide-content">
+            <div class="skill-header reveal">
+                <span class="skill-number">01</span>
+                <span class="tag">核心 Skill</span>
+            </div>
+            <h2 class="reveal" style="transition-delay:0.15s;">🔧 <span class="accent">智能顾问集成</span></h2>
+            <div class="neon-line reveal"></div>
+            <p class="reveal" style="transition-delay:0.25s;margin-bottom:var(--element-gap);">
+                OpenClaw Skill，提供完整的风险管理闭环能力——从巡检到自动修复
+            </p>
+            <div class="grid-2 reveal" style="transition-delay:0.35s;">
+                <div>
+                    <div class="arch-flow" style="flex-direction:column;align-items:stretch;gap:clamp(0.3rem,0.6vw,0.5rem);">
+                        <div class="arch-node highlight" style="animation:glowBorder 3s infinite;">📊 获取风险列表 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">默认 High/Medium 优先级</span></div>
+                        <div class="arch-arrow" style="text-align:center;">↓</div>
+                        <div class="arch-node">📋 查询巡检规则 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">按产品/风险等级过滤</span></div>
+                        <div class="arch-arrow" style="text-align:center;">↓</div>
+                        <div class="arch-node">🔍 综合巡检分析 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">风险关联规则全景报告</span></div>
+                        <div class="arch-arrow" style="text-align:center;">↓</div>
+                        <div class="arch-node highlight" style="border-color:var(--accent-magenta);box-shadow:0 0 15px rgba(255,0,170,0.15);color:var(--accent-magenta);">🔧 风险自动修复 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">tccli 执行 · 需用户确认</span></div>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <span class="comment"># 自然语言驱动</span><br><br>
+                    <span class="string">"检查我的腾讯云风险"</span><br>
+                    <span class="comment">→ 自动获取 High/Medium 风险列表</span><br><br>
+                    <span class="string">"显示 CVM 产品的巡检规则"</span><br>
+                    <span class="comment">→ 按产品过滤巡检策略</span><br><br>
+                    <span class="string">"综合巡检腾讯云"</span><br>
+                    <span class="comment">→ 规则 + 风险实例完整视图</span><br><br>
+                    <span class="string">"修复第一个风险"</span><br>
+                    <span class="comment">→ 展示 tccli 命令 → 等待确认</span><br>
+                    <span class="keyword">⚠️ 所有修复需用户输入 "yes" 确认</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 6: Skill 2 — 巡检报告解析
+         ========================================== -->
+    <section class="slide" id="slide-5">
+        <div class="blob blob-orange" style="width:280px;height:280px;bottom:-60px;right:5%;"></div>
+        <div class="slide-content">
+            <div class="skill-header reveal">
+                <span class="skill-number" style="color:var(--accent-orange);">02</span>
+                <span class="tag tag-orange">报告解析</span>
+            </div>
+            <h2 class="reveal" style="transition-delay:0.15s;">📊 <span class="accent-orange">巡检报告解析</span></h2>
+            <div class="neon-line reveal" style="background:linear-gradient(90deg,var(--accent-orange),transparent);"></div>
+            <p class="reveal" style="transition-delay:0.25s;margin-bottom:var(--element-gap);">
+                自动解析智能顾问巡检报告邮件，提取风险数据并生成可视化统计报告
+            </p>
+            <div class="grid-2 reveal" style="transition-delay:0.35s;">
+                <div>
+                    <div class="arch-flow" style="flex-direction:column;align-items:stretch;gap:clamp(0.3rem,0.6vw,0.5rem);">
+                        <div class="arch-node" style="border-color:rgba(255,123,0,0.3);">📧 POP3 邮件接收 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">自动获取巡检报告邮件</span></div>
+                        <div class="arch-arrow" style="text-align:center;color:var(--accent-orange);">↓</div>
+                        <div class="arch-node" style="border-color:rgba(255,123,0,0.3);">📥 Excel 附件解析 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">提取风险项/等级/资源</span></div>
+                        <div class="arch-arrow" style="text-align:center;color:var(--accent-orange);">↓</div>
+                        <div class="arch-node" style="border-color:rgba(255,123,0,0.3);">📈 多维度统计分析 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">按等级/服务/地域统计</span></div>
+                        <div class="arch-arrow" style="text-align:center;color:var(--accent-orange);">↓</div>
+                        <div class="arch-node" style="border-color:var(--accent-orange);box-shadow:0 0 15px rgba(255,123,0,0.15);color:var(--accent-orange);">🌐 可视化网页生成 <span style="font-size:var(--tag-size);display:block;color:var(--text-secondary);">HTML 报告 + 截图反馈</span></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="card" style="border-left:3px solid var(--accent-orange);margin-bottom:clamp(0.5rem,1vw,0.75rem);">
+                        <h3 style="font-size:var(--body-size);">📊 统计维度</h3>
+                        <ul class="feature-list orange" style="margin-top:clamp(0.2rem,0.4vw,0.4rem);">
+                            <li>按风险等级统计（高/中/低/信息）</li>
+                            <li>按服务类型统计（CVM/CLB/COS...）</li>
+                            <li>按地域统计（广州/上海/北京...）</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-left:3px solid var(--accent-orange);">
+                        <h3 style="font-size:var(--body-size);">🔗 输出引导</h3>
+                        <p style="margin-top:clamp(0.2rem,0.4vw,0.4rem);">生成的网页底部自动引导用户访问智能顾问控制台进行云上架构风险治理</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 7: Skill 3 — 每日邮件报告
+         ========================================== -->
+    <section class="slide" id="slide-6">
+        <div class="blob blob-magenta" style="width:280px;height:280px;top:-40px;right:10%;"></div>
+        <div class="slide-content">
+            <div class="skill-header reveal">
+                <span class="skill-number" style="color:var(--accent-magenta);">03</span>
+                <span class="tag tag-magenta">每日运维</span>
+            </div>
+            <h2 class="reveal" style="transition-delay:0.15s;">📧 <span class="accent-magenta">每日邮件报告</span></h2>
+            <div class="neon-line reveal" style="background:linear-gradient(90deg,var(--accent-magenta),transparent);"></div>
+            <p class="reveal" style="transition-delay:0.25s;margin-bottom:var(--element-gap);">
+                纯 Shell 实现的日常运维工具，自动接收并生成每日巡检报告
+            </p>
+            <div class="grid-2 reveal" style="transition-delay:0.35s;">
+                <div>
+                    <div class="card" style="border-left:3px solid var(--accent-magenta);margin-bottom:clamp(0.5rem,1vw,0.75rem);">
+                        <h3 style="font-size:var(--body-size);">核心特性</h3>
+                        <ul class="feature-list magenta" style="margin-top:clamp(0.2rem,0.4vw,0.4rem);">
+                            <li>多账号/架构图分组管理</li>
+                            <li>本地缓存 + 自动去重（message-id）</li>
+                            <li>环比对比分析风险趋势</li>
+                            <li>自动提取并映射账号名称</li>
+                            <li>纯 Shell 实现，零 Python 依赖</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-left:3px solid var(--accent-magenta);">
+                        <h3 style="font-size:var(--body-size);">脚本矩阵</h3>
+                        <ul class="feature-list magenta" style="margin-top:clamp(0.2rem,0.4vw,0.4rem);">
+                            <li><strong style="color:var(--text-primary);">advisor-report.sh</strong> — 主编排脚本</li>
+                            <li><strong style="color:var(--text-primary);">advisor-sync.sh</strong> — 邮件同步缓存</li>
+                            <li><strong style="color:var(--text-primary);">generate-report.sh</strong> — 按账号生成报告</li>
+                            <li><strong style="color:var(--text-primary);">daily-summary.sh</strong> — 聚合每日摘要</li>
+                            <li><strong style="color:var(--text-primary);">advisor-compare.sh</strong> — 环比对比工具</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <span class="comment"># 安装依赖 Skills</span><br>
+                    <span class="keyword">openclaw</span> skills install <span class="string">himalaya</span><br>
+                    <span class="keyword">openclaw</span> skills install <span class="string">summarize</span><br><br>
+                    <span class="comment"># 生成今日报告</span><br>
+                    <span class="keyword">./scripts/advisor-report.sh</span> <span class="function">--today</span><br><br>
+                    <span class="comment"># 带环比对比</span><br>
+                    <span class="keyword">./scripts/advisor-report.sh</span> <span class="function">--today --compare</span><br><br>
+                    <span class="comment"># 指定账号</span><br>
+                    <span class="keyword">./scripts/advisor-report.sh</span> <span class="function">--appid 123456 --today</span><br><br>
+                    <span class="comment"># 📋 报告输出示例：</span><br>
+                    <span class="string">🔴 High Risk: 7</span><br>
+                    <span class="string">🟡 Medium Risk: 13</span><br>
+                    <span class="string">✅ Healthy: 104</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 8: Architecture
+         ========================================== -->
+    <section class="slide" id="slide-7">
+        <div class="blob blob-cyan" style="width:200px;height:200px;top:15%;left:-40px;"></div>
+        <div class="blob blob-magenta" style="width:180px;height:180px;bottom:10%;right:-40px;"></div>
+        <div class="slide-content">
+            <h2 class="reveal">整体<span class="accent">架构</span></h2>
+            <div class="neon-line reveal"></div>
+            <p class="reveal" style="transition-delay:0.15s;margin-bottom:var(--content-gap);">
+                三大 Skill 通过 OpenClaw Gateway 统一编排，协同完成风险治理全流程
+            </p>
+            <div class="arch-flow reveal-scale" style="transition-delay:0.3s;">
+                <div class="arch-node">👤 用户<br><span style="font-size:var(--tag-size);color:var(--text-secondary);">自然语言指令</span></div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node highlight" style="animation:glowBorder 3s infinite;">🦞 OpenClaw<br><span style="font-size:var(--tag-size);">AI Agent Gateway</span></div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node" style="border-color:rgba(0,255,204,0.4);">🔧 Skill Set<br><span style="font-size:var(--tag-size);color:var(--text-secondary);">3 个技能插件</span></div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">☁️ 智能顾问<br><span style="font-size:var(--tag-size);color:var(--text-secondary);">API / 邮件 / tccli</span></div>
+            </div>
+            <div class="grid-3 reveal" style="transition-delay:0.5s;margin-top:var(--content-gap);">
+                <div class="card" style="text-align:center;border-top:3px solid var(--accent-cyan);">
+                    <h3 style="font-size:var(--body-size);">🔧 实时巡检</h3>
+                    <p>API 调用获取风险列表<br>自然语言触发修复</p>
+                </div>
+                <div class="card" style="text-align:center;border-top:3px solid var(--accent-orange);">
+                    <h3 style="font-size:var(--body-size);">📊 报告解析</h3>
+                    <p>POP3 获取邮件附件<br>生成可视化统计网页</p>
+                </div>
+                <div class="card" style="text-align:center;border-top:3px solid var(--accent-magenta);">
+                    <h3 style="font-size:var(--body-size);">📧 每日摘要</h3>
+                    <p>定时同步缓存邮件<br>多账号环比趋势分析</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 9: 安全机制 & 数据
+         ========================================== -->
+    <section class="slide" id="slide-8">
+        <div class="blob blob-cyan" style="width:300px;height:300px;bottom:-80px;left:-60px;"></div>
+        <div class="slide-content" style="align-items:center;text-align:center;">
+            <h2 class="reveal">安全机制 & <span class="accent">关键数据</span></h2>
+            <div class="neon-line reveal" style="margin:0 auto var(--content-gap);"></div>
+            <div class="stats-row reveal" style="transition-delay:0.2s;">
+                <div class="stat-item">
+                    <div class="stat-number">410+</div>
+                    <div class="stat-label">巡检策略</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">评估维度</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Agentic Skills</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">23K+</div>
+                    <div class="stat-label">服务客户</div>
+                </div>
+            </div>
+            <div class="grid-3 reveal" style="transition-delay:0.4s;margin-top:var(--content-gap);text-align:left;">
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <h3>写操作需确认</h3>
+                    <p>所有修复命令展示 tccli 内容后，必须用户输入 "yes" 才执行，防止误操作</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👁️</div>
+                    <h3>只读安全</h3>
+                    <p>查询与分析操作不需确认，读写权限严格分离</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📝</div>
+                    <h3>审计记录</h3>
+                    <p>所有修复操作全程记录，本地缓存自动去重，数据可追溯</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 10: Closing
+         ========================================== -->
+    <section class="slide title-slide" id="slide-9">
+        <div class="blob blob-cyan" style="width:400px;height:400px;bottom:-120px;left:50%;transform:translateX(-50%);"></div>
+        <div class="blob blob-magenta" style="width:250px;height:250px;top:-80px;right:10%;"></div>
+        <div class="slide-content">
+            <div class="reveal">
+                <span class="tag pulse">开源 · Agentic AI · 云上卓越架构</span>
+            </div>
+            <h1 class="reveal glow-text" style="transition-delay:0.15s;">
+                智能顾问 <span class="accent">Skill Set</span>
+            </h1>
+            <p class="subtitle reveal" style="transition-delay:0.3s;">
+                让 AI Agent 成为你的云上架构治理专家
+            </p>
+            <div class="neon-line reveal" style="transition-delay:0.4s;margin:0 auto;"></div>
+            <div class="reveal" style="transition-delay:0.5s;display:flex;gap:clamp(0.75rem,2vw,1.5rem);flex-wrap:wrap;justify-content:center;margin-top:var(--element-gap);">
+                <span class="tag" style="border-color:rgba(255,255,255,0.2);color:var(--text-secondary);font-size:var(--small-size);">cloud.tencent.com/product/advisor</span>
+                <span class="tag" style="border-color:rgba(0,255,204,0.3);font-size:var(--small-size);">fisherhhyu.github.io</span>
+            </div>
+            <div class="reveal" style="transition-delay:0.6s;display:flex;gap:clamp(0.5rem,1vw,1rem);flex-wrap:wrap;justify-content:center;margin-top:clamp(0.5rem,1vw,1rem);">
+                <span class="tag" style="font-size:var(--tag-size);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);">Skill 1: 智能顾问集成</span>
+                <span class="tag tag-orange" style="font-size:var(--tag-size);border-color:rgba(255,123,0,0.2);color:rgba(255,123,0,0.5);">Skill 2: 巡检报告解析</span>
+                <span class="tag tag-magenta" style="font-size:var(--tag-size);border-color:rgba(255,0,170,0.2);color:rgba(255,0,170,0.5);">Skill 3: 每日邮件报告</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+       JAVASCRIPT: Slide Controller
+       ========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.totalSlides = this.slides.length;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.init();
+            }
+
+            init() {
+                this.createNavDots();
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.updateProgress();
+                this.slides[0].classList.add('visible');
+                setTimeout(() => {
+                    const hint = document.getElementById('keyboardHint');
+                    if (hint) hint.style.opacity = '0';
+                }, 8000);
+            }
+
+            createNavDots() {
+                const nav = document.getElementById('navDots');
+                for (let i = 0; i < this.totalSlides; i++) {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `跳转到第 ${i + 1} 页`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    nav.appendChild(dot);
+                }
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            this.currentSlide = index;
+                            this.updateNavDots();
+                            this.updateProgress();
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case 'ArrowRight':
+                        case 'ArrowDown':
+                        case ' ':
+                            e.preventDefault();
+                            this.nextSlide();
+                            this.hideHint();
+                            break;
+                        case 'ArrowLeft':
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.prevSlide();
+                            this.hideHint();
+                            break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const delta = this.touchStartY - e.changedTouches[0].clientY;
+                    if (Math.abs(delta) > 50) {
+                        if (delta > 0) this.nextSlide();
+                        else this.prevSlide();
+                    }
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        if (e.deltaY > 30) this.nextSlide();
+                        else if (e.deltaY < -30) this.prevSlide();
+                    }, 80);
+                }, { passive: true });
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.totalSlides || this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateNavDots();
+                this.updateProgress();
+                setTimeout(() => { this.isAnimating = false; }, 600);
+            }
+
+            nextSlide() { this.goToSlide(this.currentSlide + 1); }
+            prevSlide() { this.goToSlide(this.currentSlide - 1); }
+
+            updateNavDots() {
+                const dots = document.querySelectorAll('.nav-dot');
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === this.currentSlide);
+                });
+            }
+
+            updateProgress() {
+                const progress = ((this.currentSlide + 1) / this.totalSlides) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+            }
+
+            hideHint() {
+                const hint = document.getElementById('keyboardHint');
+                if (hint) hint.style.opacity = '0';
+            }
+        }
+
+        new SlidePresentation();
+    </script>
+</body>
+</html>
